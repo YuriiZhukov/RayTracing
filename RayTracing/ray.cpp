@@ -1,17 +1,17 @@
 #include <qelapsedtimer.h>
-#include "raygrid.h"
+#include "ray.h"
 
-RayGrid::RayGrid() : _direction(1.0, 0.0, 0.0) {}
-RayGrid::~RayGrid() {}
+Ray::Ray() : _direction(1.0, 0.0, 0.0) {}
+Ray::~Ray() {}
 
-void RayGrid::setPosition(float x, float y, float z)
+void Ray::setPosition(float x, float y, float z)
 {
 	_position.x = x;
 	_position.y = y;
 	_position.z = z;
 }
 
-void RayGrid::setDirection(float x, float y, float z)
+void Ray::setDirection(float x, float y, float z)
 {
 	_directions.clear();
 
@@ -26,7 +26,7 @@ void RayGrid::setDirection(float x, float y, float z)
 	_rotation.z = quaternion.vector().z();
 }
 
-void RayGrid::setRotation(float yaw, float pitch, float roll)
+void Ray::setRotation(float yaw, float pitch, float roll)
 {
 	_directions.clear();
 
@@ -64,7 +64,7 @@ void RayGrid::setRotation(float yaw, float pitch, float roll)
 	setRaysGrid();
 }
 
-void RayGrid::setRaysGrid()
+void Ray::setRaysGrid()
 {
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
 
@@ -109,8 +109,8 @@ void RayGrid::setRaysGrid()
 	}
 }
 
-const Matrix3x3 & RayGrid::rotationMatrix() const { return _matrix; }
-const vector3f & RayGrid::rotation() const {return _rotation; }
-const vector3f & RayGrid::position() const {return _position; }
-const vector3f & RayGrid::direction() const { return _direction; }
-const std::vector<vector3f> & RayGrid::directions() const { return _directions; }
+const Matrix3x3 & Ray::rotationMatrix() const { return _matrix; }
+const vector3f & Ray::rotation() const {return _rotation; }
+const vector3f & Ray::position() const {return _position; }
+const vector3f & Ray::direction() const { return _direction; }
+const std::vector<vector3f> & Ray::directions() const { return _directions; }

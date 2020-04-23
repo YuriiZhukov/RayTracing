@@ -13,7 +13,7 @@
 #include <QFileDialog>
 #include "ui_raytracinggui.h"
 #include "objloader.h"
-#include "raygrid.h"
+#include "ray.h"
 #include "imageviewer.h"
 #include "visualizator.h"
 #include "raytracing.h"
@@ -39,7 +39,7 @@ private slots:
 private:
 	Ui::RayTracingGuiClass ui;
 	ObjLoader loader;
-	RayGrid rayGrid;
+	Ray ray;
 	ImageViewer *imageViewer;
 	QSplitter *splitter;
 	RayTracing rayTracing;

@@ -31,10 +31,10 @@
     <ClCompile Include="matrix3x3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="raygrid.cpp">
+    <ClCompile Include="intersectionwizard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="intersectionwizard.cpp">
+    <ClCompile Include="ray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,13 +54,13 @@
     <ClInclude Include="matrix3x3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="raygrid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="raytracing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="intersectionwizard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

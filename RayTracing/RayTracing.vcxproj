@@ -104,7 +104,7 @@
   <ItemGroup>
     <ClCompile Include="intersectionwizard.cpp" />
     <ClCompile Include="matrix3x3.cpp" />
-    <ClCompile Include="raygrid.cpp" />
+    <ClCompile Include="ray.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="objloader.cpp" />
     <ClCompile Include="rayintersection.cpp" />
@@ -116,7 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="matrix3x3.h" />
-    <ClInclude Include="raygrid.h" />
+    <ClInclude Include="ray.h" />
     <ClInclude Include="objloader.h" />
     <ClInclude Include="rayintersection.h" />
     <ClInclude Include="structs.h" />

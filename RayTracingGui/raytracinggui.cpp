@@ -95,8 +95,8 @@ void RayTracingGui::setupControlWidget()
 	setRow(&yawSpb, new QLabel("Yaw:"));
 	setRow(&pitchSpb, new QLabel("Pitch:"));
 	setRow(&rollSpb, new QLabel("Roll:"));
-	/*Ограничение ширины виджета управления в 100 пикселей*/
-	controlWidget.setMaximumWidth(100);
+	/*Ограничение ширины виджета управления в 150 пикселей*/
+	controlWidget.setMaximumWidth(150);
 	controlWidget.setLayout(&controlsLayout);
 	splitter->addWidget(&controlWidget);
 }
@@ -131,8 +131,8 @@ void RayTracingGui::calculate()
 	if (loader.trianglesData().size() == 0)
 		return;
 
-	rayGrid.setPosition(xPosSpb.value(), yPosSpb.value(), zPosSpb.value());
-	rayGrid.setRotation(deg2rad(yawSpb.value()), deg2rad(pitchSpb.value()), deg2rad(rollSpb.value()));
+	ray.setPosition(xPosSpb.value(), yPosSpb.value(), zPosSpb.value());
+	ray.setRotation(deg2rad(yawSpb.value()), deg2rad(pitchSpb.value()), deg2rad(rollSpb.value()));
 
 	/*Вектор для записи выходных точек пересечения*/
 	std::vector<vector3f> points;
@@ -141,14 +141,14 @@ void RayTracingGui::calculate()
 
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
 	iw.setObjData(loader.trianglesData());
-	iw.setDirData(rayGrid.directions());
-	iw.setOrigData(rayGrid.position());
+	iw.setDirData(ray.directions());
+	iw.setOrigData(ray.position());
 	
 	if (CUDA_CALC)
 		rayTracing.calculate(points, lengths);
 	else
-		rayTracing.calculate(loader.trianglesData(), rayGrid.directions(),
-							 rayGrid.position(), points, lengths,
+		rayTracing.calculate(loader.trianglesData(), ray.directions(),
+							 ray.position(), points, lengths,
 							 iw.gridData().raysByYaw, iw.gridData().raysByPitch);
 
 	float maxLen = 0.0;
@@ -188,6 +188,7 @@ void RayTracingGui::setCameraControlSlot(QVector3D orig, QVector3D view)
 {
 	if (blockCameraControll)
 		return;
+
 	/*Заблокировать сигналы*/
 	blockSpinBoxSignals = true;
 	xPosSpb.setValue(orig.x());
@@ -196,14 +197,14 @@ void RayTracingGui::setCameraControlSlot(QVector3D orig, QVector3D view)
 	yawSpb.setValue(view.x());
 	pitchSpb.setValue(view.y());
 	rollSpb.setValue(view.z());
-	this->calculate();
 	/*Разблокировать сигналы*/
 	blockSpinBoxSignals = false;
+	
+	this->calculate();
 
 	/*Блокировка отрисовки на заданный FPS*/
 	fpsTimer.singleShot(1000 / cameraFPS, [this]() {blockCameraControll = false; });
 	blockCameraControll = true;
-
 }
 
 void RayTracingGui::resizeEvent(QResizeEvent *e)

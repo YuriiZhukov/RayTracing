@@ -6,11 +6,11 @@
 #include "structs.h"
 #include "intersectionwizard.h"
 
-class RayGrid
+class Ray
 {
 public:
-	RayGrid();
-	virtual ~RayGrid();
+	Ray();
+	virtual ~Ray();
 
 public:
 	/*Установить позицию камеры*/
