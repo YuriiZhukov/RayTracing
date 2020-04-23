@@ -130,99 +130,7 @@ __global__ void calcIntersection(float *objData, float *dirData, float *origData
 	}
 }
 
-#if 0
-void calculateIntersection(const std::vector<TriangleData> &td,
-						   const std::vector<vector3f> &dir,
-						   const vector3f &orig,
-						   std::vector<vector3f> &points,
-						   std::vector<float> &lengths,
-						   const unsigned int gridSizeBeta,
-						   const unsigned int gridSizeEpsilon)
-{
-	QElapsedTimer tmr;
-	tmr.start();
-
-	IntersectionWizard& iw = IntersectionWizard::getInstance();
-
-	/*данные сцены*/
-	if (objData == nullptr)
-	{
-		objDataBytes = td.size() * sizeof(TriangleData);
-		objDataSize = td.size() * sizeof(TriangleData) / sizeof(float);
-		objData = (float*)&td[0];// new float[objDataSize];
-		memcpy(objData, &td[0], objDataBytes);
-		HANDLE_ERROR(cudaMalloc((void**)&dev_objData, objDataBytes));
-		HANDLE_ERROR(cudaMemcpy(dev_objData, objData, objDataBytes, cudaMemcpyHostToDevice));
-	}
-
-	/*данные векторов направлений*/
-	unsigned int dirDataBytes  = dir.size() * sizeof(vector3f);
-	unsigned int dirDataSize = dir.size() * sizeof(vector3f) / sizeof(float);
-	float *dirData = new float[dirDataSize];
-	memcpy(dirData, &dir[0], dirDataBytes);
-	float* dev_dirData;
-	HANDLE_ERROR(cudaMalloc((void**)&dev_dirData, dirDataBytes));
-	HANDLE_ERROR(cudaMemcpy(dev_dirData, dirData, dirDataBytes, cudaMemcpyHostToDevice));
-
-	/*данные позиции*/
-	unsigned int origDataBytes = sizeof(vector3f);
-	unsigned int origDataSize = sizeof(vector3f) / sizeof(float);
-	float *origData = new float[origDataSize];
-	memcpy(origData, &orig, origDataBytes);
-	float* dev_origData;
-	HANDLE_ERROR(cudaMalloc((void**)&dev_origData, origDataBytes));
-	HANDLE_ERROR(cudaMemcpy(dev_origData, origData, origDataBytes, cudaMemcpyHostToDevice));
-
-	/*выходные данные точек пересечения*/
-	unsigned int outPointsDataBytes = dir.size() * sizeof(vector3f);
-	unsigned int outPointsDataSize = dir.size() * sizeof(vector3f) / sizeof(float);
-	float *outPointsData  = new float[outPointsDataSize];
-	float* dev_outPointsData;
-	HANDLE_ERROR(cudaMallocHost((void**)&dev_outPointsData, outPointsDataBytes));
-
-	/*выходные данные дальностей до точек пересечения*/
-	unsigned int outLengthsDataBytes = dir.size() * sizeof(float);
-	unsigned int outLengthsDataSize = dir.size();
-	float *outLengthsData = new float[outLengthsDataSize];
-	float* dev_outLengthsData;
-	HANDLE_ERROR(cudaMallocHost((void**)&dev_outLengthsData, outLengthsDataBytes));
-
-	dim3 grid(gridSizeBeta * gridSizeEpsilon, 1);
-	calcIntersection<<<gridSizeBeta, gridSizeEpsilon >>>(dev_objData, dev_dirData, 
-														 dev_origData, dev_outPointsData,
-														 dev_outLengthsData, objDataSize);
-
-	HANDLE_ERROR(cudaMemcpy(outPointsData, dev_outPointsData, outPointsDataBytes, cudaMemcpyDeviceToHost));
-	HANDLE_ERROR(cudaMemcpy(outLengthsData, dev_outLengthsData, outLengthsDataBytes, cudaMemcpyDeviceToHost));
-	
-	for (unsigned int i = 0; i < dir.size(); i++)
-	{
-		vector3f point(outPointsData[i * 3 + 0], outPointsData[i * 3 + 1], outPointsData[i * 3 + 2]);
-		points.push_back(point);
-		lengths.push_back(outLengthsData[i]);
-	}
-
-	cudaFree(dev_dirData);
-	cudaFree(dev_origData);
-	cudaFreeHost(dev_outPointsData);
-	cudaFreeHost(dev_outLengthsData);
-
-	delete[] dirData;
-	delete[] origData;
-	delete[] outPointsData;
-	delete[] outLengthsData;
-
-	quint64 time = tmr.elapsed();
-	qDebug() << "Time = " << time;
-}
-#else
-void calculateIntersection(const std::vector<TriangleData> &td,
-	const std::vector<vector3f> &dir,
-	const vector3f &orig,
-	std::vector<vector3f> &points,
-	std::vector<float> &lengths,
-	const unsigned int gridSizeBeta,
-	const unsigned int gridSizeEpsilon)
+void calculateIntersection(std::vector<vector3f> &points, std::vector<float> &lengths)
 {
 	QElapsedTimer tmr;
 	tmr.start();
@@ -245,28 +153,27 @@ void calculateIntersection(const std::vector<TriangleData> &td,
 	HANDLE_ERROR(cudaMemcpy(dev_origData, iw.origData().data, iw.origData().bytes, cudaMemcpyHostToDevice));
 
 	/*выходные данные точек пересечения*/
-	unsigned int outPointsDataBytes = dir.size() * sizeof(vector3f);
-	unsigned int outPointsDataSize = dir.size() * sizeof(vector3f) / sizeof(float);
+	unsigned int outPointsDataBytes = iw.dirData().bytes;
+	unsigned int outPointsDataSize = iw.dirData().size;
 	float *outPointsData = new float[outPointsDataSize];
 	float* dev_outPointsData;
 	HANDLE_ERROR(cudaMallocHost((void**)&dev_outPointsData, outPointsDataBytes));
 
 	/*выходные данные дальностей до точек пересечения*/
-	unsigned int outLengthsDataBytes = dir.size() * sizeof(float);
-	unsigned int outLengthsDataSize = dir.size();
+	unsigned int outLengthsDataBytes = iw.dirData().count * sizeof(float);
+	unsigned int outLengthsDataSize = iw.dirData().count;
 	float *outLengthsData = new float[outLengthsDataSize];
 	float* dev_outLengthsData;
 	HANDLE_ERROR(cudaMallocHost((void**)&dev_outLengthsData, outLengthsDataBytes));
 
-	dim3 grid(gridSizeBeta * gridSizeEpsilon, 1);
-	calcIntersection << <gridSizeBeta, gridSizeEpsilon >> > (dev_objData, dev_dirData,
+	calcIntersection << <iw.gridData().raysByYaw, iw.gridData().raysByPitch >> > (dev_objData, dev_dirData,
 		dev_origData, dev_outPointsData,
 		dev_outLengthsData, iw.objData().size);
 
 	HANDLE_ERROR(cudaMemcpy(outPointsData, dev_outPointsData, outPointsDataBytes, cudaMemcpyDeviceToHost));
 	HANDLE_ERROR(cudaMemcpy(outLengthsData, dev_outLengthsData, outLengthsDataBytes, cudaMemcpyDeviceToHost));
 
-	for (unsigned int i = 0; i < dir.size(); i++)
+	for (unsigned int i = 0; i < iw.dirData().count; i++)
 	{
 		vector3f point(outPointsData[i * 3 + 0], outPointsData[i * 3 + 1], outPointsData[i * 3 + 2]);
 		points.push_back(point);
@@ -286,4 +193,3 @@ void calculateIntersection(const std::vector<TriangleData> &td,
 	qDebug() << "Time = " << time;
 }
 
-#endif

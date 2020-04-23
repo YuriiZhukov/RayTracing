@@ -69,12 +69,6 @@ private:
 	/*Загрузка объекта сцены*/
 	QPushButton loadObjBtn;
 
-	/*Параметры сетки лучей*/
-	int gridSizeX;
-	int gridSizeY;
-	int gridYawAngle;
-	int gridPitchAngle;
-
 	/*Буффер изображения*/
 	std::vector<unsigned char> imageBuffer;
 
@@ -85,4 +79,7 @@ private:
 	bool blockCameraControll;
 	QTimer fpsTimer;
 	int cameraFPS;
+
+	/*Флаг для расчета на CUDA*/
+	bool CUDA_CALC;
 };

@@ -1,8 +1,8 @@
 #include "raytracinggui.h"
 
 RayTracingGui::RayTracingGui(QWidget *parent)
-	: QWidget(parent), blockSpinBoxSignals(false), 
-	blockCameraControll(false), cameraFPS(30)
+	: QWidget(parent), blockSpinBoxSignals(false),
+	blockCameraControll(false), cameraFPS(30), CUDA_CALC(true)
 {
 	ui.setupUi(this);
 	splitter = new QSplitter(this);
@@ -10,7 +10,7 @@ RayTracingGui::RayTracingGui(QWidget *parent)
 	setupControlWidget();
 	setupImageViewer();
 	
-	loader.load(std::string("cub2es.obj"));
+	loader.load(std::string("cubes.obj"));
 	vis.load("cubes.obj");
 
 	setupStartParams();
@@ -120,11 +120,9 @@ void RayTracingGui::setupStartParams()
 
 void RayTracingGui::applyGridParams()
 {
-	gridSizeX = xGridSizeSpb.value();
-	gridSizeY = yGridSizeSpb.value();
-	gridYawAngle = gridYawAngleSpb.value();
-	gridPitchAngle = gridPitchAngleSpb.value();
-	rayGrid.setGrid(deg2rad(gridYawAngleSpb.value()), deg2rad(gridPitchAngleSpb.value()), gridSizeX, gridSizeY);
+	IntersectionWizard& iw = IntersectionWizard::getInstance();
+	iw.setGridData(deg2rad(gridYawAngleSpb.value()), deg2rad(gridPitchAngleSpb.value()), 
+						   xGridSizeSpb.value(), yGridSizeSpb.value());
 	this->calculate();
 }
 
@@ -145,10 +143,14 @@ void RayTracingGui::calculate()
 	iw.setObjData(loader.trianglesData());
 	iw.setDirData(rayGrid.directions());
 	iw.setOrigData(rayGrid.position());
+	
+	if (CUDA_CALC)
+		rayTracing.calculate(points, lengths);
+	else
+		rayTracing.calculate(loader.trianglesData(), rayGrid.directions(),
+							 rayGrid.position(), points, lengths,
+							 iw.gridData().raysByYaw, iw.gridData().raysByPitch);
 
-	rayTracing.calculate(loader.trianglesData(), rayGrid.directions(),
-						 rayGrid.position(), points, lengths,
-						 gridSizeX, gridSizeY);
 	float maxLen = 0.0;
 	float minLen = lengths[0];
 	for (int i = 0; i < lengths.size(); i++)
@@ -158,6 +160,10 @@ void RayTracingGui::calculate()
 		if (lengths[i] < minLen)
 			minLen = lengths[i];
 	}
+
+	int gridSizeX = iw.gridData().raysByYaw;
+	int gridSizeY = iw.gridData().raysByPitch;
+
 	/*Построение изображения в соответствии с количеством заданных лучей направлений*/
 	const int imageBufferSize = 4 * gridSizeX * gridSizeY;
 	imageBuffer.clear();
@@ -176,8 +182,6 @@ void RayTracingGui::calculate()
 	}
 	QImage image(&imageBuffer[0], gridSizeX, gridSizeY, QImage::Format_RGB32);
 	imageViewer->setImage(image);
-
-
 }
 
 void RayTracingGui::setCameraControlSlot(QVector3D orig, QVector3D view)

@@ -4,6 +4,7 @@
 
 #include <qquaternion.h>
 #include "structs.h"
+#include "intersectionwizard.h"
 
 class RayGrid
 {
@@ -26,9 +27,6 @@ public:
 	const vector3f& direction() const;
 	/*Получить вектора направлений лучей*/
 	const std::vector<vector3f>& directions() const;
-	/*Установить сетку лучей !! В РАДИАНАХ !! */
-	void setGrid(float beta, float epsilon,
-					  int gridSizeBeta, int gridSizeEpsilon);
 
 private:
 	/*Установить вектор направленности камеры*/ //убрать или оставить
@@ -49,10 +47,5 @@ private:
 	std::vector<vector3f> _directions;
 	/*Результирующая матрица поворота */
 	Matrix3x3 _matrix;
-	/*Параметры сетки лучей*/
-	float beta;
-	float epsilon;
-	int gridSizeBeta;
-	int gridSizeEpsilon;
 };
 

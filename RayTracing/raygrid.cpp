@@ -1,9 +1,7 @@
 #include <qelapsedtimer.h>
 #include "raygrid.h"
 
-RayGrid::RayGrid() : _direction(1.0, 0.0, 0.0),
-			 beta(0.0), epsilon(0.0), 
-			 gridSizeBeta(0), gridSizeEpsilon(0) {}
+RayGrid::RayGrid() : _direction(1.0, 0.0, 0.0) {}
 RayGrid::~RayGrid() {}
 
 void RayGrid::setPosition(float x, float y, float z)
@@ -66,42 +64,21 @@ void RayGrid::setRotation(float yaw, float pitch, float roll)
 	setRaysGrid();
 }
 
-void RayGrid::setGrid(float beta, float epsilon,
-	int gridSizeBeta, int gridSizeEpsilon)
-{
-	this->beta = beta;
-	this->epsilon = epsilon;
-	this->gridSizeBeta = gridSizeBeta;
-	this->gridSizeEpsilon = gridSizeEpsilon;
-}
-
-
 void RayGrid::setRaysGrid()
 {
-	if (gridSizeBeta <= 0 || gridSizeEpsilon <= 0)
-	{
-		gridSizeBeta = 1;
-		gridSizeEpsilon = 1;
-	}
+	IntersectionWizard& iw = IntersectionWizard::getInstance();
 
-	float delta = 0.000001;
-	if (beta <= delta || epsilon <= delta)
-	{
-		beta = 0.1;
-		epsilon = 0.1;
-	}
-
-	float betaStep = beta / float(gridSizeBeta); /*<---->*/
+	float betaStep = iw.gridData().yawAngle / float(iw.gridData().raysByYaw); /*<---->*/
 	
-	float epsilonStep = epsilon / float(gridSizeEpsilon);
+	float epsilonStep = iw.gridData().pitchAngle / float(iw.gridData().raysByPitch);
 
-	for (int i = -gridSizeEpsilon / 2; i <= gridSizeEpsilon / 2; i++)
+	for (int i = -iw.gridData().raysByPitch / 2; i <= iw.gridData().raysByPitch / 2; i++)
 	{
-		if ((i == 0) && (gridSizeEpsilon % 2 == 0))
+		if ((i == 0) && (iw.gridData().raysByPitch % 2 == 0))
 			continue;
-		for (int j = gridSizeBeta / 2; j >= -gridSizeBeta / 2; j--)
+		for (int j = iw.gridData().raysByYaw / 2; j >= -iw.gridData().raysByYaw / 2; j--)
 		{
-			if ((j == 0) && (gridSizeBeta % 2 == 0))
+			if ((j == 0) && (iw.gridData().raysByYaw % 2 == 0))
 				continue;
 
 #ifdef USE_QUATERNIONS
