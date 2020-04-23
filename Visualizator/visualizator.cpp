@@ -131,13 +131,13 @@ void Visualizator::setCameraControl()
 	m_sphereTransform->setTranslation(dest);
 	
 	
-	qDebug() << "Cam: (" << view.x() << ";" 
+	/*qDebug() << "Cam: (" << view.x() << ";" 
 						 << view.y() << ";" 
 						 << view.z() << ")";
 
 	qDebug() << "Rot: (" << (int)rot.x() << ";" 
 						 << (int)rot.y() << ";" 
-						 << (int)rot.z() << ")";
+						 << (int)rot.z() << ")";*/
 
 	emit setCameraControlSignal(cameraEntity->position(), rot);
 	

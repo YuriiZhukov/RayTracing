@@ -12,6 +12,9 @@ void ObjLoader::load(std::string& filepath)
 	qDebug() << QString(filepath.data());
 	std::ifstream file;
 	file.open(filepath);
+	if (!file)
+		return;
+
 	parseFile(file);
 }
 
@@ -71,7 +74,6 @@ void ObjLoader::parseFile(std::ifstream& file)
 				/*ѕроверка, что формат был определен*/
 				if (faceType == unknown)
 					return;		//¬ыход из загрузчика при некорректном формате записи поверхностей
-
 			}
 
 			/*ќпределение количества точек в одной поверхности
@@ -225,14 +227,15 @@ void ObjLoader::parseFaceLine(std::string & faceline)
 
 void ObjLoader::fillTrianglesData()
 {
-	if (vertexIndices.size() != normalIndices.size())
-		qDebug() << "Different vector size (vertexIndices != normalIndices)";
+	if (!checkDataCorrectness())
+		return;
 
 	for (size_t i = 0; i < vertexIndices.size(); i += 3)
 	{
+
 		TrianglePoint p0, p1, p2;
 
-		/*»ндексы точек начинаютс€ с 1. »ндексаци€ векторов с 0 
+		/*»ндексы точек начинаютс€ с 1. »ндексаци€ векторов с 0
 		(отсюда следует вычитание из индекса -1)*/
 		p0.coords = vertices[vertexIndices[i + 0] - 1];
 		p0.normals = normals[normalIndices[i + 0] - 1];
@@ -242,18 +245,37 @@ void ObjLoader::fillTrianglesData()
 
 		p2.coords = vertices[vertexIndices[i + 2] - 1];
 		p2.normals = normals[normalIndices[i + 2] - 1];
-		
+
 		_trianglesData.push_back(TriangleData(p0, p1, p2));
 	}
 }
 
-
-void ObjLoader::setPosition(float x, float y, float z)
+bool ObjLoader::checkDataCorrectness()
 {
-}
+	if (vertexIndices.size() != normalIndices.size())
+	{
+		qDebug() << "Different vector size (vertexIndices != normalIndices)";
+		return false;
+	}
+	/*ѕроверка размеров всех векторов*/
+	if (vertexIndices.size() == 0 || normalIndices.size() == 0 ||
+		vertices.size() == 0 || normals.size() == 0)
+	{
+		qDebug() << "Elements count in vector = 0";
+		return false;
+	}
 
-void ObjLoader::setRotation(float yaw, float pithc, float roll)
-{
+	/*ѕроверка, что максимальный индекс координат/нормалей не больше
+	размера всех найденных координат/нормалей в файле*/
+	int maxVertexIndex = *std::max_element(vertexIndices.begin(), vertexIndices.end());
+	int maxNormalIndex = *std::max_element(normalIndices.begin(), normalIndices.end());
+	if (maxVertexIndex != vertices.size() || maxNormalIndex != normals.size())
+	{
+		qDebug() << "Elements count in vectors and does not match";
+		return false;
+	}
+
+	return true;
 }
 
 std::vector<TriangleData>& ObjLoader::trianglesData() { return _trianglesData; }

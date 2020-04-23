@@ -12,8 +12,6 @@ public:
 	ObjLoader();
 	virtual ~ObjLoader();
 	void load(std::string & filepath);
-	void setPosition(float x, float y, float z);
-	void setRotation(float yaw, float pithc, float roll);
 	std::vector<TriangleData> & trianglesData();
 
 private:
@@ -29,6 +27,8 @@ private:
 	void parseFaceLine(std::string & faceline);
 	/*Заполнение данных всех треугольников объекта*/
 	void fillTrianglesData();
+	/*Проверка корректности массивов из прочитанного файла */
+	bool checkDataCorrectness();
 
 private:
 	/*Вектор значений нормалей каждой точки*/

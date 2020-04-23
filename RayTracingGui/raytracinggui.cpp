@@ -10,7 +10,7 @@ RayTracingGui::RayTracingGui(QWidget *parent)
 	setupControlWidget();
 	setupImageViewer();
 	
-	loader.load(std::string("cubes.obj"));
+	loader.load(std::string("cub2es.obj"));
 	vis.load("cubes.obj");
 
 	setupStartParams();
@@ -130,6 +130,9 @@ void RayTracingGui::applyGridParams()
 
 void RayTracingGui::calculate()
 {
+	if (loader.trianglesData().size() == 0)
+		return;
+
 	rayGrid.setPosition(xPosSpb.value(), yPosSpb.value(), zPosSpb.value());
 	rayGrid.setRotation(deg2rad(yawSpb.value()), deg2rad(pitchSpb.value()), deg2rad(rollSpb.value()));
 
