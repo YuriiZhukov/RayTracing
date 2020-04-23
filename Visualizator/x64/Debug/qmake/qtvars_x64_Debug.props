@@ -1,0 +1,26 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+<Qt_DEFINES_>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_3DANIMATION_LIB;QT_3DEXTRAS_LIB;QT_3DRENDER_LIB;QT_3DINPUT_LIB;QT_3DLOGIC_LIB;QT_3DCORE_LIB;QT_GAMEPAD_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB</Qt_DEFINES_>
+<Qt_INCLUDEPATH_>.;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\Qt3DAnimation;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\Qt3DExtras;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\Qt3DRender;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\Qt3DInput;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\Qt3DLogic;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\Qt3DCore;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\QtGamepad;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\QtWidgets;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\QtGui;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\QtANGLE;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\QtNetwork;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\include\QtCore;/include;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\mkspecs\win32-msvc</Qt_INCLUDEPATH_>
+<Qt_LIBS_>C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt53DAnimationd.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt53DExtrasd.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt53DRenderd.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt53DInputd.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt53DLogicd.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt53DCored.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt5Gamepadd.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt5Widgetsd.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt5Guid.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt5Networkd.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\Qt5Cored.lib;C:\Qt\Qt5.13.2\5.13.2\msvc2017_64\lib\qtmaind.lib;shell32.lib</Qt_LIBS_>
+<Qt_LIBPATH_>C:\openssl\lib;C:\Utils\my_sql\mysql-5.7.25-winx64\lib;C:\Utils\postgresql\pgsql\lib</Qt_LIBPATH_>
+<Qt_INCLUDEPATH_
+      >$(Qt_INCLUDEPATH_);x64\Debug\moc</Qt_INCLUDEPATH_>
+    <QtBkup_QtInstall
+      >msvc2017_64</QtBkup_QtInstall>
+    <QtBkup_QtModules
+      >3danimation;3dcore;3dextras;3dinput;3dlogic;3drender;core;gui;widgets</QtBkup_QtModules>
+    <QtBkup_QtPathBinaries
+      >bin</QtBkup_QtPathBinaries>
+    <QtBkup_QtPathLibraryExecutables
+      >bin</QtBkup_QtPathLibraryExecutables>
+    <QtBkup_QtHeaderSearchPath
+      ></QtBkup_QtHeaderSearchPath>
+    <QtBkup_QtLibrarySearchPath
+      ></QtBkup_QtLibrarySearchPath>
+    <QtBkup_QtVars
+      >DEFINES=/-D(\w+)/$1/;INCLUDEPATH=INCPATH/-I(\x22[^\x22]+\x22|[^\s]+)/$1/;LIBS=/(?:\/LIBPATH:(?:\x22[^\x22]+\x22|[^\s]+))|(\x22[^\x22]+\x22|[^\s]+)/$1/;LIBPATH=LIBS/\/LIBPATH:(\x22[^\x22]+\x22|[^\s]+)/$1/</QtBkup_QtVars>
+    <QtBkup_QMakeCodeLines
+      ></QtBkup_QMakeCodeLines>
+  </PropertyGroup>
+</Project>
