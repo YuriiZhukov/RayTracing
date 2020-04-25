@@ -59,6 +59,30 @@ void RayTracingGui::setupControlWidget()
 		controlsLayout.addLayout(lay);
 	};
 
+	auto setRadioRow = [this](QRadioButton* rbtn, const QString& text)
+	{
+		QHBoxLayout *lay = new QHBoxLayout;
+		rbtn->setText(text);
+		lay->addWidget(rbtn);
+		controlsLayout.addLayout(lay);
+	};
+
+	gpuRbtn.setChecked(true);
+
+	deviceBtnGroup.addButton(&gpuRbtn);
+	deviceBtnGroup.addButton(&cpuRbtn);	
+
+	setRadioRow(&gpuRbtn, "CUDA calculation");
+	setRadioRow(&cpuRbtn, "CPU calculation");
+	connect(&cpuRbtn, &QRadioButton::clicked, [this]()
+	{
+		CUDA_CALC = false;
+	});	
+	connect(&gpuRbtn, &QRadioButton::clicked, [this]()
+	{
+		CUDA_CALC = true;
+	});
+
 	loadObjBtn.setText(QString("Load '.obj'"));
 	connect(&loadObjBtn, &QPushButton::clicked, [this]()
 	{
@@ -120,9 +144,9 @@ void RayTracingGui::setupStartParams()
 
 void RayTracingGui::applyGridParams()
 {
-	IntersectionWizard& iw = IntersectionWizard::getInstance();
-	iw.setGridData(deg2rad(gridYawAngleSpb.value()), deg2rad(gridPitchAngleSpb.value()), 
-						   xGridSizeSpb.value(), yGridSizeSpb.value());
+	ray.setGridParams(deg2rad(gridYawAngleSpb.value()), 
+					  deg2rad(gridPitchAngleSpb.value()),
+					  xGridSizeSpb.value(), yGridSizeSpb.value());
 	this->calculate();
 }
 
@@ -138,50 +162,18 @@ void RayTracingGui::calculate()
 	std::vector<vector3f> points;
 	/*Вектор для записи выходных дальностей до точек пересечения*/
 	std::vector<float> lengths;
-
-	IntersectionWizard& iw = IntersectionWizard::getInstance();
-	iw.setObjData(loader.trianglesData());
-	iw.setDirData(ray.directions());
-	iw.setOrigData(ray.position());
 	
 	if (CUDA_CALC)
 		rayTracing.calculate(points, lengths);
 	else
+	{
+		IntersectionWizard& iw = IntersectionWizard::getInstance();
 		rayTracing.calculate(loader.trianglesData(), ray.directions(),
 							 ray.position(), points, lengths,
 							 iw.gridData().raysByYaw, iw.gridData().raysByPitch);
-
-	float maxLen = 0.0;
-	float minLen = lengths[0];
-	for (int i = 0; i < lengths.size(); i++)
-	{
-		if (lengths[i] > maxLen)
-			maxLen = lengths[i];
-		if (lengths[i] < minLen)
-			minLen = lengths[i];
 	}
 
-	int gridSizeX = iw.gridData().raysByYaw;
-	int gridSizeY = iw.gridData().raysByPitch;
-
-	/*Построение изображения в соответствии с количеством заданных лучей направлений*/
-	const int imageBufferSize = 4 * gridSizeX * gridSizeY;
-	imageBuffer.clear();
-	imageBuffer.resize(imageBufferSize);
-	//unsigned char *imageBuffer = new unsigned char[imageBufferSize];
-	for (int i = 0; i < gridSizeY; i++)
-	{
-		for (int j = 0; j < gridSizeX; j++)
-		{
-			int pixelPos = i * gridSizeX + j;
-			int pixelColor = fabs((lengths[pixelPos] / maxLen * 255) - 255.0);
-			imageBuffer[4 * pixelPos + 0] = pixelColor;
-			imageBuffer[4 * pixelPos + 1] = pixelColor;
-			imageBuffer[4 * pixelPos + 2] = pixelColor;
-		}
-	}
-	QImage image(&imageBuffer[0], gridSizeX, gridSizeY, QImage::Format_RGB32);
-	imageViewer->setImage(image);
+	imageViewer->setImage(imageBuilder.createImage(lengths));
 }
 
 void RayTracingGui::setCameraControlSlot(QVector3D orig, QVector3D view)

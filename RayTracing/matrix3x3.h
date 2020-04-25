@@ -25,7 +25,7 @@ private:
 	float m00, m01, m02,
 		  m10, m11, m12,
 		  m20, m21, m22;
-	float yaw, pitch, roll;
+
 	vector3f _rotation;
 	vector3f _direction;
 };

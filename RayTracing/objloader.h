@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include "structs.h"
+#include "intersectionwizard.h"
 
 class ObjLoader
 {

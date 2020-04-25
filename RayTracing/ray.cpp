@@ -9,6 +9,9 @@ void Ray::setPosition(float x, float y, float z)
 	_position.x = x;
 	_position.y = y;
 	_position.z = z;
+
+	IntersectionWizard& iw = IntersectionWizard::getInstance();
+	iw.setOrigData(_position);
 }
 
 void Ray::setDirection(float x, float y, float z)
@@ -64,6 +67,14 @@ void Ray::setRotation(float yaw, float pitch, float roll)
 	setRaysGrid();
 }
 
+void Ray::setGridParams(float yawAngle, float pitchAngle,
+						int raysByYaw, int raysByPitch)
+{
+	IntersectionWizard& iw = IntersectionWizard::getInstance();
+	iw.setGridData(yawAngle, pitchAngle, raysByYaw, raysByPitch);
+
+}
+
 void Ray::setRaysGrid()
 {
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
@@ -72,6 +83,8 @@ void Ray::setRaysGrid()
 	
 	float epsilonStep = iw.gridData().pitchAngle / float(iw.gridData().raysByPitch);
 
+	_directions.resize(iw.gridData().raysByYaw * iw.gridData().raysByPitch);
+	int counter = 0;
 	for (int i = -iw.gridData().raysByPitch / 2; i <= iw.gridData().raysByPitch / 2; i++)
 	{
 		if ((i == 0) && (iw.gridData().raysByPitch % 2 == 0))
@@ -83,8 +96,8 @@ void Ray::setRaysGrid()
 
 #ifdef USE_QUATERNIONS
 			QQuaternion quat =
-				QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), rad2deg(_rotation.x + xStep * i)) *
-				QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), rad2deg(_rotation.y + yStep * j)) *
+				QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), rad2deg(_rotation.x + epsilonStep * i)) *
+				QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), rad2deg(_rotation.y + betaStep * j)) *
 				QQuaternion::fromAxisAndAngle(QVector3D(0, 0, 1), rad2deg(_rotation.z));
 
 			vector3f dir;
@@ -96,17 +109,21 @@ void Ray::setRaysGrid()
 			dir.z = d.z();
 			dir.normalize();
 
-			_directions.push_back(dir);
+			_directions[counter] = dir;
+
 #else
 			Matrix3x3 mat;
 			mat.setRotation(_rotation.x + betaStep * j,
 							_rotation.y + epsilonStep * i,
 							_rotation.z);
 
-			_directions.push_back(mat.direction());
+			_directions[counter] = mat.direction();
 #endif
+			++counter;
+
 		}
 	}
+	iw.setDirData(_directions);
 }
 
 const Matrix3x3 & Ray::rotationMatrix() const { return _matrix; }

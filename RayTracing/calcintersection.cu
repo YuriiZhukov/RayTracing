@@ -173,11 +173,14 @@ void calculateIntersection(std::vector<vector3f> &points, std::vector<float> &le
 	HANDLE_ERROR(cudaMemcpy(outPointsData, dev_outPointsData, outPointsDataBytes, cudaMemcpyDeviceToHost));
 	HANDLE_ERROR(cudaMemcpy(outLengthsData, dev_outLengthsData, outLengthsDataBytes, cudaMemcpyDeviceToHost));
 
+	lengths.resize(iw.dirData().count);
+	points.resize(iw.dirData().count);
+
 	for (unsigned int i = 0; i < iw.dirData().count; i++)
 	{
 		vector3f point(outPointsData[i * 3 + 0], outPointsData[i * 3 + 1], outPointsData[i * 3 + 2]);
-		points.push_back(point);
-		lengths.push_back(outLengthsData[i]);
+		points[i] = point;
+		lengths[i] = outLengthsData[i];
 	}
 
 	cudaFree(dev_objData);
@@ -192,4 +195,3 @@ void calculateIntersection(std::vector<vector3f> &points, std::vector<float> &le
 	quint64 time = tmr.elapsed();
 	qDebug() << "Time = " << time;
 }
-

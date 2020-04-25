@@ -1,6 +1,6 @@
 #pragma once
 
-//#define USE_QUATERNIONS
+///#define USE_QUATERNIONS
 
 #include <qquaternion.h>
 #include "structs.h"
@@ -27,6 +27,9 @@ public:
 	const vector3f& direction() const;
 	/*ѕолучить вектора направлений лучей*/
 	const std::vector<vector3f>& directions() const;
+	/*”становить параметры сетки*/
+	void Ray::setGridParams(float yawAngle, float pitchAngle,
+							int raysByYaw, int raysByPitch);
 
 private:
 	/*”становить вектор направленности камеры*/ //убрать или оставить

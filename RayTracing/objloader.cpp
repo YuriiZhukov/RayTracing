@@ -248,6 +248,9 @@ void ObjLoader::fillTrianglesData()
 
 		_trianglesData.push_back(TriangleData(p0, p1, p2));
 	}
+	
+	IntersectionWizard& iw = IntersectionWizard::getInstance();
+	iw.setObjData(_trianglesData);
 }
 
 bool ObjLoader::checkDataCorrectness()

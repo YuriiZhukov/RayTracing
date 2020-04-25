@@ -3,10 +3,6 @@
 
 void Matrix3x3::setRotation(float yaw, float pitch, float roll)
 {
-	this->yaw = yaw;
-	this->pitch = pitch;
-	this->roll = roll;
-
 	/* c - cos, s - sin;
 	p - psi(yaw, OY), t - theta(pitch, OY), g - gamma(roll, OY) */
 	float cp, sp, ct, st, cg, sg;

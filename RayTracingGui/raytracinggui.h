@@ -11,6 +11,8 @@
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QFileDialog>
+#include <QRadioButton>
+#include <QButtonGroup>
 #include "ui_raytracinggui.h"
 #include "objloader.h"
 #include "ray.h"
@@ -18,6 +20,7 @@
 #include "visualizator.h"
 #include "raytracing.h"
 #include "intersectionwizard.h"
+#include "imagebuilder.h"
 
 class RayTracingGui : public QWidget
 {
@@ -44,6 +47,7 @@ private:
 	QSplitter *splitter;
 	RayTracing rayTracing;
 	Visualizator vis;
+	ImageBuilder imageBuilder;
 	QWidget *container;
 
 	/*Виджет с элементами управления лучем (позиция и направление)*/
@@ -63,14 +67,19 @@ private:
 	QSpinBox gridPitchAngleSpb;
 	QPushButton applyGridParamBtn;
 
+	/*Элементы управления для параметров расчета*/
+	QButtonGroup deviceBtnGroup;
+	QButtonGroup matrixBtnGroup;
+	QRadioButton gpuRbtn;
+	QRadioButton cpuRbtn;
+	QRadioButton matrixRbtn;
+	QRadioButton quaternionRbtn;
+
 	/*Элементы управления FPS отрисовки изображения*/
 	QSpinBox fpsSpb;
 
 	/*Загрузка объекта сцены*/
 	QPushButton loadObjBtn;
-
-	/*Буффер изображения*/
-	std::vector<unsigned char> imageBuffer;
 
 	/*Флаг для блокировки сигналов изменения значений спинбоксов 
 	пока все значения не будут установлены*/
