@@ -67,12 +67,12 @@ void Ray::setRotation(float yaw, float pitch, float roll)
 	setRaysGrid();
 }
 
-void Ray::setGridParams(float yawAngle, float pitchAngle,
+bool Ray::setGridParams(float yawAngle, float pitchAngle,
 						int raysByYaw, int raysByPitch)
 {
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
 	iw.setGridData(yawAngle, pitchAngle, raysByYaw, raysByPitch);
-
+	return true;
 }
 
 void Ray::setRaysGrid()

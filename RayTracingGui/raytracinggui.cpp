@@ -1,4 +1,5 @@
 #include "raytracinggui.h"
+#include <QElapsedTimer>
 
 RayTracingGui::RayTracingGui(QWidget *parent)
 	: QWidget(parent), blockSpinBoxSignals(false),
@@ -152,17 +153,23 @@ void RayTracingGui::applyGridParams()
 
 void RayTracingGui::calculate()
 {
+	QElapsedTimer tmr;
+	quint64 cudaTime, imageTime, rayTime, allTime;
+
 	if (loader.trianglesData().size() == 0)
 		return;
-
+	
+tmr.start();
 	ray.setPosition(xPosSpb.value(), yPosSpb.value(), zPosSpb.value());
 	ray.setRotation(deg2rad(yawSpb.value()), deg2rad(pitchSpb.value()), deg2rad(rollSpb.value()));
+rayTime = tmr.nsecsElapsed() / 1000;
 
 	/*Вектор для записи выходных точек пересечения*/
 	std::vector<vector3f> points;
 	/*Вектор для записи выходных дальностей до точек пересечения*/
 	std::vector<float> lengths;
-	
+
+tmr.start();
 	if (CUDA_CALC)
 		rayTracing.calculate(points, lengths);
 	else
@@ -172,8 +179,15 @@ void RayTracingGui::calculate()
 							 ray.position(), points, lengths,
 							 iw.gridData().raysByYaw, iw.gridData().raysByPitch);
 	}
+cudaTime = tmr.nsecsElapsed() / 1000;
 
+tmr.start();
 	imageViewer->setImage(imageBuilder.createImage(lengths));
+imageTime = tmr.nsecsElapsed() / 1000;
+
+qDebug() << "Ray  time = " << rayTime << "\n" <<
+			"Cuda time = " << cudaTime << "\n" <<
+			"IMG  time = " << imageTime << "\n";
 }
 
 void RayTracingGui::setCameraControlSlot(QVector3D orig, QVector3D view)

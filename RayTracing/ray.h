@@ -1,6 +1,6 @@
 #pragma once
 
-///#define USE_QUATERNIONS
+//#define USE_QUATERNIONS
 
 #include <qquaternion.h>
 #include "structs.h"
@@ -28,7 +28,7 @@ public:
 	/*Получить вектора направлений лучей*/
 	const std::vector<vector3f>& directions() const;
 	/*Установить параметры сетки*/
-	void Ray::setGridParams(float yawAngle, float pitchAngle,
+	bool Ray::setGridParams(float yawAngle, float pitchAngle,
 							int raysByYaw, int raysByPitch);
 
 private:

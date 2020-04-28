@@ -132,10 +132,12 @@ __global__ void calcIntersection(float *objData, float *dirData, float *origData
 
 void calculateIntersection(std::vector<vector3f> &points, std::vector<float> &lengths)
 {
-	QElapsedTimer tmr;
-	tmr.start();
-
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
+	if (!iw.dataCorrect())
+	{
+		qDebug() << "Data incorrect";
+		return;
+	}
 
 	/*данные сцены*/
 	float* dev_objData;
@@ -191,7 +193,4 @@ void calculateIntersection(std::vector<vector3f> &points, std::vector<float> &le
 
 	delete[] outPointsData;
 	delete[] outLengthsData;
-
-	quint64 time = tmr.elapsed();
-	qDebug() << "Time = " << time;
 }

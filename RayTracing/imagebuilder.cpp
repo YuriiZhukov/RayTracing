@@ -12,6 +12,8 @@ QImage & ImageBuilder::createImage(std::vector<float>& lengths)
 	}
 
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
+	if (!iw.dataCorrect())
+		return QImage();
 
 	float maxLen = 0.0;
 	float minLen = lengths[0];

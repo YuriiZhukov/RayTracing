@@ -14,7 +14,7 @@ struct CUData
 struct GridData
 {
 	GridData() : yawAngle(0.0), pitchAngle(0.0), 
-		raysByYaw(0), raysByPitch(0) {}
+				 raysByYaw(0), raysByPitch(0) {}
 	float yawAngle;
 	float pitchAngle;
 	int raysByYaw;
@@ -42,10 +42,19 @@ public:
 	CUData& origData();
 	GridData& gridData();
 
+	/*Возвращает true если все данные заданы верно*/
+	bool dataCorrect();
+
 private:
 	CUData _objData;
 	CUData _dirData;
 	CUData _origData;
 	GridData _gridData;
+
+	/*Флаги состояний*/
+	bool objCorrect;
+	bool dirCorrect;
+	bool origCorrect;
+	bool gridCorrect;
 };
 
