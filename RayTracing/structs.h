@@ -40,16 +40,3 @@ static float deg2rad(float deg)
 {
 	return deg / 180.0 * M_PI;
 }
-
-static float dot_product(const vector3f& a, const vector3f& b)
-{
-	return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-static vector3f cross_product(const vector3f& a, const vector3f& b)
-{
-	return vector3f(a.y * b.z - a.z * b.y,
-					a.z * b.x - a.x * b.z,
-					a.x * b.y - a.y * b.x);
-}
-

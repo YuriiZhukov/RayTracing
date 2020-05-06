@@ -1,5 +1,6 @@
 #include "raytracinggui.h"
 #include <QtWidgets/QApplication>
+#include <bitset>
 
 int main(int argc, char *argv[])
 {

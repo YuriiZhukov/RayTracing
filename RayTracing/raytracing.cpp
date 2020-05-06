@@ -7,16 +7,10 @@ RayTracing::RayTracing()
 {
 }
 
-void RayTracing::calculate(const std::vector<TriangleData> &td,
-						   const std::vector<vector3f> &dir,
-						   const vector3f &orig,
-						   std::vector<vector3f> &points,
-						   std::vector<float> &lengths,
-						   const unsigned int gridSizeX,
-						   const unsigned int gridSizeY)
+void RayTracing::calculate_cpu(std::vector<vector3f> &points,
+						   std::vector<float> &lengths)
 {
-	for (size_t i = 0; i < dir.size(); i++)
-		rayIntersection.calculateIntersection(td, dir.at(i), orig, points, lengths);
+	rayIntersection.calculateIntersection(points, lengths);
 }
 
 void RayTracing::calculate(std::vector<vector3f> &points,
@@ -24,3 +18,24 @@ void RayTracing::calculate(std::vector<vector3f> &points,
 {
 	calculateIntersection(points, lengths);
 }
+
+void RayTracing::setRaysGrid(float yawAngle, float pitchAngle, int raysByYaw, int raysByPitch)
+{
+	ray.setGridParams(yawAngle, pitchAngle, raysByYaw, raysByPitch);
+}
+
+void RayTracing::setRayPosition(float x, float y, float z)
+{
+	ray.setPosition(x, y, z);
+}
+
+void RayTracing::setRayRotation(float yaw, float pitch, float roll)
+{
+	ray.setRotation(yaw, pitch, roll);
+}
+
+bool RayTracing::load(std::string & filepath)
+{
+	return objLoader.load(filepath);
+}
+

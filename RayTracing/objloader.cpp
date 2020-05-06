@@ -6,32 +6,40 @@
 ObjLoader::ObjLoader(){}
 ObjLoader::~ObjLoader(){}
 
-void ObjLoader::load(std::string& filepath)
+bool ObjLoader::load(std::string& filepath)
 {
 	resetParams();
 	qDebug() << QString(filepath.data());
 	std::ifstream file;
 	file.open(filepath);
 	if (!file)
-		return;
+		return false;
 
-	parseFile(file);
+	return parseFile(file);
 }
 
 void ObjLoader::resetParams()
 {
 	normals.clear();
+	normals.shrink_to_fit();
 	vertices.clear();
+	vertices.shrink_to_fit();
 	indices.clear();
+	indices.shrink_to_fit();
 	vertexIndices.clear();
+	vertexIndices.shrink_to_fit();
 	normalIndices.clear();
+	normalIndices.shrink_to_fit();
 	textureIndices.clear();
+	textureIndices.shrink_to_fit();
+	_trianglesData.clear();
+	_trianglesData.shrink_to_fit();
+
 	faceType = FaceType::unknown;
 	pointPerFace = 0;
-	_trianglesData.clear();
 }
 
-void ObjLoader::parseFile(std::ifstream& file)
+bool ObjLoader::parseFile(std::ifstream& file)
 {
 	while (!file.eof())
 	{
@@ -73,7 +81,7 @@ void ObjLoader::parseFile(std::ifstream& file)
 				faceType = faceTypeDefinition(line);
 				/*Проверка, что формат был определен*/
 				if (faceType == unknown)
-					return;		//Выход из загрузчика при некорректном формате записи поверхностей
+					return false;		//Выход из загрузчика при некорректном формате записи поверхностей
 			}
 
 			/*Определение количества точек в одной поверхности
@@ -84,16 +92,13 @@ void ObjLoader::parseFile(std::ifstream& file)
 				pointPerFace = pointPerFaceDefinition(line);
 				/*Проверка, что кол-во точек было определено*/
 				if (pointPerFace != 3)
-					return;		//Выход из загрузчика при некорректном количестве точек поверхности
+					return false;		//Выход из загрузчика при некорректном количестве точек поверхности
 			}
 
 			parseFaceLine(line);
 		}
 	}
-
-	fillTrianglesData();
-
-	qDebug() << "End parser";
+	return fillTrianglesData();
 }
 
 FaceType ObjLoader::faceTypeDefinition(std::string & faceline)
@@ -219,20 +224,21 @@ void ObjLoader::parseFaceLine(std::string & faceline)
 				vertexIndices.push_back(vindex);	//v
 				textureIndices.push_back(tindex);	//t
 				//реализовать подсчет нормалей
-				qDebug() << "Не реализован подсчет нормалей";
+				qDebug() << "ERROR in " << __FUNCTION__"!!!" <<
+							"Не реализован подсчет нормалей";
 			}
 		}
 	}
 }
 
-void ObjLoader::fillTrianglesData()
+bool ObjLoader::fillTrianglesData()
 {
 	if (!checkDataCorrectness())
-		return;
+		return false;
 
+	_trianglesData.resize(vertexIndices.size());
 	for (size_t i = 0; i < vertexIndices.size(); i += 3)
 	{
-
 		TrianglePoint p0, p1, p2;
 
 		/*Индексы точек начинаются с 1. Индексация векторов с 0
@@ -246,25 +252,29 @@ void ObjLoader::fillTrianglesData()
 		p2.coords = vertices[vertexIndices[i + 2] - 1];
 		p2.normals = normals[normalIndices[i + 2] - 1];
 
-		_trianglesData.push_back(TriangleData(p0, p1, p2));
+		_trianglesData[i] = TriangleData(p0, p1, p2);
 	}
 	
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
 	iw.setObjData(_trianglesData);
+	
+	return true;
 }
 
 bool ObjLoader::checkDataCorrectness()
 {
 	if (vertexIndices.size() != normalIndices.size())
 	{
-		qDebug() << "Different vector size (vertexIndices != normalIndices)";
+		qDebug() << "ERROR in " << __FUNCTION__"!!!" << 
+					"Different vector size (vertexIndices != normalIndices)";
 		return false;
 	}
 	/*Проверка размеров всех векторов*/
 	if (vertexIndices.size() == 0 || normalIndices.size() == 0 ||
 		vertices.size() == 0 || normals.size() == 0)
 	{
-		qDebug() << "Elements count in vector = 0";
+		qDebug() << "ERROR in " << __FUNCTION__"!!!" <<
+					"Elements count in vector = 0";
 		return false;
 	}
 
@@ -274,7 +284,8 @@ bool ObjLoader::checkDataCorrectness()
 	int maxNormalIndex = *std::max_element(normalIndices.begin(), normalIndices.end());
 	if (maxVertexIndex != vertices.size() || maxNormalIndex != normals.size())
 	{
-		qDebug() << "Elements count in vectors and does not match";
+		qDebug() << "ERROR in " << __FUNCTION__"!!!" <<
+					"Elements count in vectors and does not match";
 		return false;
 	}
 

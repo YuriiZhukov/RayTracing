@@ -14,12 +14,9 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 #include "ui_raytracinggui.h"
-#include "objloader.h"
-#include "ray.h"
 #include "imageviewer.h"
 #include "visualizator.h"
 #include "raytracing.h"
-#include "intersectionwizard.h"
 #include "imagebuilder.h"
 
 class RayTracingGui : public QWidget
@@ -41,8 +38,6 @@ private slots:
 
 private:
 	Ui::RayTracingGuiClass ui;
-	ObjLoader loader;
-	Ray ray;
 	ImageViewer *imageViewer;
 	QSplitter *splitter;
 	RayTracing rayTracing;
@@ -80,6 +75,9 @@ private:
 
 	/*Загрузка объекта сцены*/
 	QPushButton loadObjBtn;
+
+	/*Дальность видимости*/
+	QSpinBox viewDistanceSpb;
 
 	/*Флаг для блокировки сигналов изменения значений спинбоксов 
 	пока все значения не будут установлены*/

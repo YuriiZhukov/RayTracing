@@ -25,9 +25,6 @@
     <ClCompile Include="objloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rayintersection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="matrix3x3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,15 +37,15 @@
     <ClCompile Include="imagebuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cpuintersection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="objloader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="structs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rayintersection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vector3f.h">
@@ -66,13 +63,16 @@
     <ClInclude Include="ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="calcintersection.cu" />
+    <ClInclude Include="cpuintersection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="imagebuilder.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="gpuintersection.cu" />
   </ItemGroup>
 </Project>

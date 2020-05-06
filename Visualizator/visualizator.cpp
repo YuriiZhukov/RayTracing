@@ -134,7 +134,6 @@ void Visualizator::setCameraControl()
 	/*qDebug() << "Cam: (" << view.x() << ";" 
 						 << view.y() << ";" 
 						 << view.z() << ")";
-
 	qDebug() << "Rot: (" << (int)rot.x() << ";" 
 						 << (int)rot.y() << ";" 
 						 << (int)rot.z() << ")";*/

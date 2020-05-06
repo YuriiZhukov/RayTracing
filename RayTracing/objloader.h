@@ -12,14 +12,14 @@ class ObjLoader
 public:
 	ObjLoader();
 	virtual ~ObjLoader();
-	void load(std::string & filepath);
+	bool load(std::string & filepath);
 	std::vector<TriangleData> & trianglesData();
 
 private:
 	/*Сброс параметров перед новой загрузкой*/
 	void resetParams();
 	/*Парс файла obj*/
-	void parseFile(std::ifstream& file);
+	bool parseFile(std::ifstream& file);
 	/*Определение способа задания поверхностей в файле obj*/
 	FaceType faceTypeDefinition(std::string & faceline);
 	/*Определение количеств точек на каждую поверхность в файле obj*/
@@ -27,7 +27,7 @@ private:
 	/*Парс строки с описанием поверхности в файле obj*/
 	void parseFaceLine(std::string & faceline);
 	/*Заполнение данных всех треугольников объекта*/
-	void fillTrianglesData();
+	bool fillTrianglesData();
 	/*Проверка корректности массивов из прочитанного файла */
 	bool checkDataCorrectness();
 

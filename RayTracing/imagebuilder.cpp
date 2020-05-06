@@ -1,6 +1,7 @@
 #include "imagebuilder.h"
+#include <algorithm>
 
-ImageBuilder::ImageBuilder() : image(nullptr){}
+ImageBuilder::ImageBuilder() : image(nullptr), viewDistance(50.0) {}
 ImageBuilder::~ImageBuilder(){}
 
 QImage & ImageBuilder::createImage(std::vector<float>& lengths)
@@ -15,35 +16,36 @@ QImage & ImageBuilder::createImage(std::vector<float>& lengths)
 	if (!iw.dataCorrect())
 		return QImage();
 
-	float maxLen = 0.0;
-	float minLen = lengths[0];
-	for (int i = 0; i < lengths.size(); i++)
+	std::for_each(lengths.begin(), lengths.end(), [this](float& l)
 	{
-		if (lengths[i] > maxLen)
-			maxLen = lengths[i];
-		if (lengths[i] < minLen)
-			minLen = lengths[i];
-	}
+		l = (l > viewDistance ? viewDistance : l) / viewDistance * 255.0;
+	});
 
-	int gridSizeX = iw.gridData().raysByYaw;
-	int gridSizeY = iw.gridData().raysByPitch;
+	int sizeX = iw.gridData().raysByYaw;
+	int sizeY = iw.gridData().raysByPitch;
 
 	/*Построение изображения в соответствии с количеством заданных лучей направлений*/
-	const int imageBufferSize = 4 * gridSizeX * gridSizeY;
+	const int imageBufferSize = 4 * sizeX * sizeY;
 	imageBuffer.clear();
+	imageBuffer.shrink_to_fit();
 	imageBuffer.resize(imageBufferSize);
-	//unsigned char *imageBuffer = new unsigned char[imageBufferSize];
-	for (int i = 0; i < gridSizeY; i++)
+
+	for (int i = 0; i < sizeY; i++)
 	{
-		for (int j = 0; j < gridSizeX; j++)
+		for (int j = 0; j < sizeX; j++)
 		{
-			int pixelPos = i * gridSizeX + j;
-			int pixelColor = fabs((lengths[pixelPos] / maxLen * 255) - 255.0);
+			int pixelPos = i * sizeX + j;
+			int pixelColor = 255.0 - lengths[pixelPos];
 			imageBuffer[4 * pixelPos + 0] = pixelColor;
 			imageBuffer[4 * pixelPos + 1] = pixelColor;
 			imageBuffer[4 * pixelPos + 2] = pixelColor;
 		}
 	}
-	image = new QImage(&imageBuffer[0], gridSizeX, gridSizeY, QImage::Format_RGB32);
+	image = new QImage(&imageBuffer[0], sizeX, sizeY, QImage::Format_RGB32);
 	return *image;
+}
+
+void ImageBuilder::setViewDistance(int value)
+{
+	viewDistance = value;
 }

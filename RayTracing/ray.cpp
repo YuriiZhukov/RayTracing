@@ -17,6 +17,7 @@ void Ray::setPosition(float x, float y, float z)
 void Ray::setDirection(float x, float y, float z)
 {
 	_directions.clear();
+	_directions.shrink_to_fit();
 
 	_direction.x = x;
 	_direction.y = y;
@@ -32,6 +33,7 @@ void Ray::setDirection(float x, float y, float z)
 void Ray::setRotation(float yaw, float pitch, float roll)
 {
 	_directions.clear();
+	_directions.shrink_to_fit();
 
 #ifdef USE_QUATERNIONS
 	/*ѕор€док произведени€ кватернионов аналогичен
@@ -96,31 +98,25 @@ void Ray::setRaysGrid()
 
 #ifdef USE_QUATERNIONS
 			QQuaternion quat =
-				QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), rad2deg(_rotation.x + epsilonStep * i)) *
-				QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), rad2deg(_rotation.y + betaStep * j)) *
+				QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), rad2deg(_rotation.x + betaStep * j)) *
+				QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), rad2deg(_rotation.y + epsilonStep * i)) *
 				QQuaternion::fromAxisAndAngle(QVector3D(0, 0, 1), rad2deg(_rotation.z));
 
 			vector3f dir;
-
 			QVector3D d = quat.rotatedVector(QVector3D(0.0, 0.0, 1.0));
-
 			dir.x = d.x();
 			dir.y = d.y();
 			dir.z = d.z();
 			dir.normalize();
-
 			_directions[counter] = dir;
-
 #else
 			Matrix3x3 mat;
 			mat.setRotation(_rotation.x + betaStep * j,
 							_rotation.y + epsilonStep * i,
 							_rotation.z);
-
 			_directions[counter] = mat.direction();
 #endif
 			++counter;
-
 		}
 	}
 	iw.setDirData(_directions);

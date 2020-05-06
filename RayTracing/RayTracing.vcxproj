@@ -108,7 +108,7 @@
     <ClCompile Include="ray.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="objloader.cpp" />
-    <ClCompile Include="rayintersection.cpp" />
+    <ClCompile Include="cpuintersection.cpp" />
     <ClCompile Include="raytracing.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -120,12 +120,12 @@
     <ClInclude Include="matrix3x3.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="objloader.h" />
-    <ClInclude Include="rayintersection.h" />
+    <ClInclude Include="cpuintersection.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="vector3f.h" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="calcintersection.cu">
+    <CudaCompile Include="gpuintersection.cu">
       <GPUDebugInfo Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</GPUDebugInfo>
     </CudaCompile>
   </ItemGroup>
