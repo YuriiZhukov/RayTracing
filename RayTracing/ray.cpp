@@ -79,12 +79,39 @@ bool Ray::setGridParams(float yawAngle, float pitchAngle,
 
 void Ray::setRaysGrid()
 {
+#if 0
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
 
 	float betaStep = iw.gridData().yawAngle / float(iw.gridData().raysByYaw); /*<---->*/
-	
 	float epsilonStep = iw.gridData().pitchAngle / float(iw.gridData().raysByPitch);
+	_directions.resize(iw.gridData().raysByYaw * iw.gridData().raysByPitch);
+	if (_directions.size() == 0)
+		return;
 
+	int counter = 0;
+	for (int i = iw.gridData().raysByPitch / 2; i >= -iw.gridData().raysByPitch / 2 + 1; i--)
+	{
+		float currentEpsilon = i * epsilonStep;
+		float yDirection = _direction.y * sin(currentEpsilon);
+		for (int j = -iw.gridData().raysByYaw / 2; j <= iw.gridData().raysByYaw / 2 - 1; j++)
+		{
+			float currentBeta = j * betaStep;
+
+			float xDirection = _direction.x * cos(currentBeta);
+			float zDirection = _direction.z * sin(currentBeta);
+
+			_directions[counter] = vector3f(xDirection, yDirection, zDirection);
+			++counter;
+		}
+	}
+	iw.setDirData(_directions);
+
+
+#else
+	IntersectionWizard& iw = IntersectionWizard::getInstance();
+
+	float betaStep = iw.gridData().yawAngle / float(iw.gridData().raysByYaw); /*<---->*/
+	float epsilonStep = iw.gridData().pitchAngle / float(iw.gridData().raysByPitch);
 	_directions.resize(iw.gridData().raysByYaw * iw.gridData().raysByPitch);
 	int counter = 0;
 	for (int i = -iw.gridData().raysByPitch / 2; i <= iw.gridData().raysByPitch / 2; i++)
@@ -120,6 +147,7 @@ void Ray::setRaysGrid()
 		}
 	}
 	iw.setDirData(_directions);
+#endif
 }
 
 const Matrix3x3 & Ray::rotationMatrix() const { return _matrix; }

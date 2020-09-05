@@ -1,4 +1,4 @@
-#include <QDebug>
+//#include <QDebug>
 #include "matrix3x3.h"
 
 void Matrix3x3::setRotation(float yaw, float pitch, float roll)

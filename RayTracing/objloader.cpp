@@ -257,7 +257,9 @@ bool ObjLoader::fillTrianglesData()
 	
 	IntersectionWizard& iw = IntersectionWizard::getInstance();
 	iw.setObjData(_trianglesData);
-	
+
+	qDebug() << "\tLoaded file (" << _trianglesData.size() / 2 << ") triangles";
+
 	return true;
 }
 

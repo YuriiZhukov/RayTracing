@@ -2,13 +2,21 @@
 #include <qelapsedtimer.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <memory>
+#include <thread>
+#include <mutex>
+#include <iostream>
 #include "structs.h"
 #include "intersectionwizard.h"
 
 void startTimer();
 void stopTimer(float& dest);
 
-cudaEvent_t start, stop;
+#define CUDA_CALC_TIME
+
+#ifdef CUDA_CALC_TiME
+	cudaEvent_t start, stop;
+#endif
 
 static void HandleError(cudaError_t err,
 	const char *file,
@@ -141,8 +149,11 @@ __global__ void calcIntersection(float *objData, float *dirData, float *origData
 
 void calculateIntersection(std::vector<vector3f> &points, std::vector<float> &lengths)
 {
+
+#ifdef CUDA_CALC_TiME
 	HANDLE_ERROR(cudaEventCreate(&start));
 	HANDLE_ERROR(cudaEventCreate(&stop));
+#endif
 
 	float timeToMalloc;
 	float timeToCalculate;
@@ -176,14 +187,16 @@ startTimer();
 	/*выходные данные точек пересечения*/
 	unsigned int outPointsDataBytes = iw.dirData().bytes;
 	unsigned int outPointsDataSize = iw.dirData().size;
-	float *outPointsData = new float[outPointsDataSize];
+	auto outPointsData = std::make_unique<float[]>(outPointsDataSize);
+	//float *outPointsData = new float[outPointsDataSize];
 	float* dev_outPointsData;
 	HANDLE_ERROR(cudaMalloc((void**)&dev_outPointsData, outPointsDataBytes));
 
 	/*выходные данные дальностей до точек пересечения*/
 	unsigned int outLengthsDataBytes = iw.dirData().count * sizeof(float);
 	unsigned int outLengthsDataSize = iw.dirData().count;
-	float *outLengthsData = new float[outLengthsDataSize];
+	auto outLengthsData = std::make_unique<float[]>(outLengthsDataSize);
+	//float *outLengthsData = new float[outLengthsDataSize];
 	float* dev_outLengthsData;
 	HANDLE_ERROR(cudaMalloc((void**)&dev_outLengthsData, outLengthsDataBytes));	
 
@@ -197,8 +210,8 @@ startTimer();
 stopTimer(timeToCalculate);
 
 startTimer();
-	HANDLE_ERROR(cudaMemcpy(outPointsData, dev_outPointsData, outPointsDataBytes, cudaMemcpyDeviceToHost));
-	HANDLE_ERROR(cudaMemcpy(outLengthsData, dev_outLengthsData, outLengthsDataBytes, cudaMemcpyDeviceToHost));
+	HANDLE_ERROR(cudaMemcpy(outPointsData.get(), dev_outPointsData, outPointsDataBytes, cudaMemcpyDeviceToHost));
+	HANDLE_ERROR(cudaMemcpy(outLengthsData.get(), dev_outLengthsData, outLengthsDataBytes, cudaMemcpyDeviceToHost));
 stopTimer(timeToMemcpy);
 
 	lengths.resize(iw.dirData().count);
@@ -206,7 +219,7 @@ stopTimer(timeToMemcpy);
 
 	for (unsigned int i = 0; i < iw.dirData().count; i++)
 	{
-		vector3f point(outPointsData[i * 3 + 0], outPointsData[i * 3 + 1], outPointsData[i * 3 + 2]);
+		vector3f point(outPointsData.get()[i * 3 + 0], outPointsData.get()[i * 3 + 1], outPointsData.get()[i * 3 + 2]);
 		points[i] = point;
 		lengths[i] = outLengthsData[i];
 	}
@@ -219,26 +232,32 @@ startTimer();
 	cudaFree(dev_outLengthsData);
 stopTimer(timeToFreeMemory);
 
-	delete[] outPointsData;
-	delete[] outLengthsData;
 
+#ifdef CUDA_CALC_TiME
 	HANDLE_ERROR(cudaEventDestroy(start));
 	HANDLE_ERROR(cudaEventDestroy(stop));
+#endif
 
 	qDebug() << "Malloc ms    = " << timeToMalloc;
 	qDebug() << "Calculate ms = " << timeToCalculate;
 	qDebug() << "Memcpy ms    = " << timeToMemcpy;;
 	qDebug() << "Free mem ms  = " << timeToFreeMemory << "\n";
+
 }
 
 void startTimer()
 {
+#ifdef CUDA_CALC_TiME
 	HANDLE_ERROR(cudaEventRecord(start, 0));
+#endif
 }
 
 void stopTimer(float& dest)
 {
+#ifdef CUDA_CALC_TiME
 	HANDLE_ERROR(cudaEventRecord(stop, 0));
 	HANDLE_ERROR(cudaEventSynchronize(stop));
 	HANDLE_ERROR(cudaEventElapsedTime(&dest, start, stop));
+#endif
 }
+
